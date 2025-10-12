@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-rckflr-centroid",
   "version": "1.1.0",
-  "description": "n8n custom node that calculates the centroid of numeric vectors with robust validation.",
+  "description": "Reliable n8n community node that computes the centroid of multidimensional vectors with validation and item-level processing.",
   "keywords": [
     "n8n",
     "n8n-community-node",
