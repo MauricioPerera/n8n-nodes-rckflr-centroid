@@ -73,3 +73,22 @@ export function calculateCentroid(vectors: number[][]): number[] {
 
 	return totals.map((component) => component / vectors.length);
 }
+
+// Utility to get a nested value by dot-separated path (e.g., "data.vectors")
+export function getValueByPath(source: unknown, path: string): unknown {
+	if (source === null || source === undefined) return undefined;
+	if (!path || typeof path !== 'string') return undefined;
+
+	const keys = path.split('.').filter(Boolean);
+	let current: unknown = source;
+
+	for (const key of keys) {
+		if (typeof current !== 'object' || current === null) {
+			return undefined;
+		}
+		const record = current as Record<string, unknown>;
+		current = record[key];
+	}
+
+	return current;
+}

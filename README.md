@@ -30,7 +30,11 @@ After installing, restart your n8n instance and add **Centroid** from the node p
 
 ## Usage
 
-1. Provide the vectors directly in the **Array of Vectors** parameter (e.g. `[[1,2,3],[4,5,6]]`) or pass them in the incoming item as `item.json.vectors`.
+1. Choose the **Vector Source**:
+   - Auto (Parameter or Item): Uses the parameter if provided; otherwise reads from the incoming item (array at `item.json` or from `item.json.vectors`).
+   - Parameter: Read vectors from the **Array of Vectors** parameter (e.g. `[[1,2,3],[4,5,6]]`).
+   - Item JSON (Root Array): Read vectors from the root of `item.json` when it contains an array of vectors.
+   - Item JSON (Path): Read vectors from a dot-separated path under `item.json` (e.g. `data.vectors`), configurable via **Vector Path**.
 2. Enable or disable **Merge Output With Input** depending on whether you want to keep the original item data.
 3. Execute the workflow. The node outputs a centroid array under the `centroid` key.
 
@@ -73,7 +77,7 @@ An example workflow is available at `examples/centroid-basic.json`. Import it in
 
 | Aspect | Description |
 | --- | --- |
-| **Input** | Optional array of vectors. Provide via node parameter or `item.json.vectors`. |
+| **Input** | Optional array of vectors. Provide via node parameter, `item.json` root array, or a dot-separated path under `item.json` (e.g. `data.vectors`). |
 | **Output** | Each item contains a centroid array. When merging is enabled, the centroid is added to the original item JSON. |
 | **Errors** | The node throws clear messages for malformed JSON, non-numeric components, empty vectors or mismatched dimensions. |
 
