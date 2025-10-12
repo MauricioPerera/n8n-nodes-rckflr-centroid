@@ -140,7 +140,6 @@ export class Centroid implements INodeType {
 				if (error instanceof Error) {
 					throw new NodeOperationError(this.getNode(), error.message, {
 						itemIndex,
-						cause: error,
 					});
 				}
 
