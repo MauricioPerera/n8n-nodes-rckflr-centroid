@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-rckflr-centroid",
-  "version": "1.0.0",
-  "description": "An n8n custom node to calculate the centroid of an array of vectors.",
+  "version": "1.1.0",
+  "description": "n8n custom node that calculates the centroid of numeric vectors with robust validation.",
   "keywords": [
     "n8n",
     "n8n-community-node",
@@ -14,14 +14,18 @@
   "homepage": "https://github.com/MauricioPerera/n8n-nodes-rckflr-centroid",
   "author": {
     "name": "Mauricio Perera",
-    "email": "your-email@example.com"
+    "email": "support@centoide.dev",
+    "url": "https://centoide.dev"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/MauricioPerera/n8n-nodes-rckflr-centroid.git"
   },
+  "bugs": {
+    "url": "https://github.com/MauricioPerera/n8n-nodes-rckflr-centroid/issues"
+  },
   "engines": {
-    "node": ">=18.10",
+    "node": ">=20",
     "pnpm": ">=9.1"
   },
   "packageManager": "pnpm@9.1.4",
@@ -30,13 +34,19 @@
     "preinstall": "npx only-allow pnpm",
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
-    "format": "prettier nodes credentials --write",
-    "lint": "eslint nodes credentials package.json",
-    "lintfix": "eslint nodes credentials package.json --fix",
-    "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json"
+    "format": "prettier \"nodes/**/*.ts\" \"tests/**/*.ts\" \"*.{js,json}\" --write",
+    "lint": "eslint nodes tests package.json",
+    "lintfix": "eslint nodes tests package.json --fix",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "coverage": "vitest run --coverage",
+    "prepublishOnly": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes package.json && pnpm test"
   },
   "files": [
-    "dist"
+    "dist",
+    "nodes",
+    "credentials",
+    "examples"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
@@ -50,7 +60,8 @@
     "eslint-plugin-n8n-nodes-base": "^1.16.1",
     "gulp": "^4.0.2",
     "prettier": "^3.3.2",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
     "n8n-workflow": "*"

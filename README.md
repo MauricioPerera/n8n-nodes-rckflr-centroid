@@ -1,46 +1,113 @@
-![Banner image](https://user-images.githubusercontent.com/10284570/173569848-c624317f-42b1-45a6-ab09-f0ea3c247648.png)
+# n8n-nodes-rckflr-centroid
 
-# n8n-nodes-starter
+[![npm version](https://img.shields.io/npm/v/n8n-nodes-rckflr-centroid?style=flat-square)](https://www.npmjs.com/package/n8n-nodes-rckflr-centroid)
+[![CI](https://github.com/MauricioPerera/n8n-nodes-rckflr-centroid/actions/workflows/ci.yml/badge.svg)](https://github.com/MauricioPerera/n8n-nodes-rckflr-centroid/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE.md)
+[![Coverage Status](https://img.shields.io/badge/coverage-80%25+-brightgreen?style=flat-square)](#quality)
 
-This repo contains example nodes to help you get started building your own custom integrations for [n8n](n8n.io). It includes the node linter and other dependencies.
+n8n community node that calculates the centroid of a list of numeric vectors. It is built for data pipelines that require averaging coordinates, embeddings or any multidimensional numeric representation.
 
-To make your custom node available to the community, you must create it as an npm package, and [submit it to the npm registry](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry).
+## Features
 
-## Prerequisites
+- Accepts vectors provided directly in the node or via incoming items.
+- Validates dimensional consistency and numeric values before processing.
+- Supports batch processing: each incoming item is evaluated independently.
+- Optionally merges the calculated centroid with the original item payload.
 
-You need the following installed on your development machine:
+## Requirements
 
-* [git](https://git-scm.com/downloads)
-* Node.js and pnpm. Minimum version Node 18. You can find instructions on how to install both using nvm (Node Version Manager) for Linux, Mac, and WSL [here](https://github.com/nvm-sh/nvm). For Windows users, refer to Microsoft's guide to [Install NodeJS on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows).
-* Install n8n with:
-  ```
-  pnpm install n8n -g
-  ```
-* Recommended: follow n8n's guide to [set up your development environment](https://docs.n8n.io/integrations/creating-nodes/build/node-development-environment/).
+- n8n `>= 1.40.0`
+- Node.js `>= 20.0.0`
+- pnpm `>= 9.1.0`
 
-## Using this starter
+## Installation
 
-These are the basic steps for working with the starter. For detailed guidance on creating and publishing nodes, refer to the [documentation](https://docs.n8n.io/integrations/creating-nodes/).
+```bash
+pnpm add n8n-nodes-rckflr-centroid
+```
 
-1. [Generate a new repository](https://github.com/n8n-io/n8n-nodes-starter/generate) from this template repository.
-2. Clone your new repo:
-   ```
-   git clone https://github.com/<your organization>/<your-repo-name>.git
-   ```
-3. Run `pnpm i` to install dependencies.
-4. Open the project in your editor.
-5. Browse the examples in `/nodes` and `/credentials`. Modify the examples, or replace them with your own nodes.
-6. Update the `package.json` to match your details.
-7. Run `pnpm lint` to check for errors or `pnpm lintfix` to automatically fix errors when possible.
-8. Test your node locally. Refer to [Run your node locally](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/) for guidance.
-9. Replace this README with documentation for your node. Use the [README_TEMPLATE](README_TEMPLATE.md) to get started.
-10. Update the LICENSE file to use your details.
-11. [Publish](https://docs.npmjs.com/packages-and-modules/contributing-packages-to-the-registry) your package to npm.
+After installing, restart your n8n instance and add **Centroid** from the node palette.
 
-## More information
+## Usage
 
-Refer to our [documentation on creating nodes](https://docs.n8n.io/integrations/creating-nodes/) for detailed information on building your own nodes.
+1. Provide the vectors directly in the **Array of Vectors** parameter (e.g. `[[1,2,3],[4,5,6]]`) or pass them in the incoming item as `item.json.vectors`.
+2. Enable or disable **Merge Output With Input** depending on whether you want to keep the original item data.
+3. Execute the workflow. The node outputs a centroid array under the `centroid` key.
+
+### Example Workflow
+
+An example workflow is available at `examples/centroid-basic.json`. Import it into n8n to see the node in action.
+
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "vectors",
+              "value": "[[0,0],[10,10],[5,5]]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Vectors",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [280, 300]
+    },
+    {
+      "parameters": {},
+      "name": "Centroid",
+      "type": "n8n-nodes-rckflr-centroid.centroid",
+      "typeVersion": 1,
+      "position": [540, 300]
+    }
+  ]
+}
+```
+
+## Inputs & Outputs
+
+| Aspect | Description |
+| --- | --- |
+| **Input** | Optional array of vectors. Provide via node parameter or `item.json.vectors`. |
+| **Output** | Each item contains a centroid array. When merging is enabled, the centroid is added to the original item JSON. |
+| **Errors** | The node throws clear messages for malformed JSON, non-numeric components, empty vectors or mismatched dimensions. |
+
+## Error Handling
+
+The node uses `NodeOperationError` for predictable failures. Errors include an item index (when available) to help you pinpoint problematic entries quickly.
+
+## Development
+
+```bash
+pnpm install
+pnpm lint        # ESLint rules for nodes and tests
+pnpm test        # Vitest unit tests with 80% coverage target
+pnpm build       # TypeScript build + icon copy to dist/
+```
+
+To run the node locally alongside n8n, follow the [official local development guide](https://docs.n8n.io/integrations/creating-nodes/test/run-node-locally/).
+
+## Quality
+
+- Linting powered by ESLint (`eslint-n8n-nodes-base` ruleset).
+- Formatting enforced through Prettier.
+- Unit tests executed with Vitest with coverage thresholds at 80% for lines, functions, branches and statements.
+- Continuous integration configured in `.github/workflows/ci.yml`.
+
+## Release Process
+
+1. Update `CHANGELOG.md` with pending changes.
+2. Bump the version in `package.json` following [SemVer](https://semver.org/).
+3. Tag the release (`git tag vX.Y.Z`) and push tags.
+4. Publish to npm with `pnpm publish --access public`.
+
+See `REQUIREMENTS.md` for the full list of project standards.
 
 ## License
 
-[MIT](https://github.com/n8n-io/n8n-nodes-starter/blob/master/LICENSE.md)
+Released under the [MIT License](LICENSE.md) © Mauricio Perera.

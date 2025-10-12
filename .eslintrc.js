@@ -13,7 +13,7 @@ module.exports = {
 	parser: '@typescript-eslint/parser',
 
 	parserOptions: {
-		project: ['./tsconfig.json'],
+		project: ['./tsconfig.eslint.json'],
 		sourceType: 'module',
 		extraFileExtensions: ['.json'],
 	},
@@ -27,15 +27,6 @@ module.exports = {
 			extends: ['plugin:n8n-nodes-base/community'],
 			rules: {
 				'n8n-nodes-base/community-package-json-name-still-default': 'off',
-			},
-		},
-		{
-			files: ['./credentials/**/*.ts'],
-			plugins: ['eslint-plugin-n8n-nodes-base'],
-			extends: ['plugin:n8n-nodes-base/credentials'],
-			rules: {
-				'n8n-nodes-base/cred-class-field-documentation-url-missing': 'off',
-				'n8n-nodes-base/cred-class-field-documentation-url-miscased': 'off',
 			},
 		},
 		{

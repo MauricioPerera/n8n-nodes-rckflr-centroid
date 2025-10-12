@@ -1,0 +1,55 @@
+{
+	"name": "Centroid demonstration",
+	"nodes": [
+		{
+			"parameters": {
+				"mode": "json",
+				"json": {
+					"data": [
+						{
+							"vectors": [
+								[0, 0, 1],
+								[10, 4, 5],
+								[3, 8, 9]
+							]
+						}
+					]
+				}
+			},
+			"id": "SetVectors",
+			"name": "Set Vectors",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 2,
+			"position": [300, 320]
+		},
+		{
+			"parameters": {
+				"mergeOutput": true
+			},
+			"id": "CentroidNode",
+			"name": "Centroid",
+			"type": "n8n-nodes-rckflr-centroid.centroid",
+			"typeVersion": 1,
+			"position": [560, 320]
+		}
+	],
+	"connections": {
+		"Set Vectors": {
+			"main": [
+				[
+					{
+						"node": "Centroid",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"active": false,
+	"meta": {},
+	"settings": {},
+	"staticData": null,
+	"version": 2
+}
