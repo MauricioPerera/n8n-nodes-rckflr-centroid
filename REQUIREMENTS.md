@@ -1,44 +1,45 @@
-# N8n Node Requirements
+# n8n Node Requirements and Checklist
 
-Guía de referencia para mantener y profesionalizar el nodo `n8n-nodes-rckflr-centroid`. Se agrupan consideraciones de repositorio, documentación, código, automatización y publicación.
+Reference guide to keep the `n8n-nodes-rckflr-centroid` project professional, documented and ready for publication.
 
-## 1. Requerimientos Generales
+## 1. General Requirements
 
-- Depurar el repositorio y eliminar archivos que no aporten al nodo.
-- Configurar `.gitignore` para excluir artefactos comunes (`node_modules`, `dist`, paquetes `.tgz`, etc.).
-- Asegurar que `package.json` contenga nombre, descripción, autor, licencia, palabras clave, `repository`, `bugs` y `homepage`.
-- Seguir versionado semántico (`MAJOR.MINOR.PATCH`) y generar *tags* y *releases* en GitHub.
-- Mantener un `CHANGELOG.md` actualizado por versión.
-- Garantizar compatibilidad con `n8n >= 1.40.0` y Node.js LTS (20.x).
-- Ejecutar auditorías de dependencias (`npm audit`/`pnpm audit`) y actualizar con regularidad.
+- Keep the repository lean; remove unused starter assets.
+- Maintain an up to date `.gitignore` covering `node_modules`, `dist`, build caches and local packages.
+- Ensure `package.json` includes name, description, author, license, keywords, repository, bugs and homepage.
+- Follow semantic versioning (`MAJOR.MINOR.PATCH`) and tag every release on GitHub.
+- Track changes in `CHANGELOG.md` for each version.
+- Support `n8n >= 1.40.0` and Node.js LTS 20.x.
+- Audit dependencies regularly (`pnpm audit`, `npm audit`) and unblock issues promptly.
 
-## 2. Documentación
+## 2. Documentation
 
 - **README.md**
-  - Incluir descripción del nodo y su finalidad.
-  - Añadir ejemplo práctico (flujo JSON exportado o captura de pantalla de n8n).
-  - Documentar entradas, salidas y manejo de errores habituales.
-  - Agregar _badges_ de estado (versión npm, CI, cobertura, licencia).
-- **Archivos complementarios**
-  - `LICENSE` con la licencia elegida (MIT o Apache 2.0).
-  - `CONTRIBUTING.md` con pautas para colaborar.
-  - `CODE_OF_CONDUCT.md` alineado a la comunidad objetivo.
-  - `SECURITY.md` (opcional) detallando el canal para reportar vulnerabilidades.
+  - Provide a clear English description of the node.
+  - Include a practical example (JSON workflow export or screenshot).
+  - Document inputs, outputs and error handling.
+  - Display status badges (npm version, CI, coverage, license).
+- **Additional files**
+  - `LICENSE` (MIT or Apache 2.0).
+  - `CONTRIBUTING.md` with collaboration guidelines.
+  - `CODE_OF_CONDUCT.md` aligned with the community.
+  - `SECURITY.md` describing how to report vulnerabilities.
 
-## 3. Código y Estructura Técnica
+## 3. Code and Technical Structure
 
-- Respetar la convención de `n8n-nodes-base`: nodos en `/nodes`, credenciales en `/credentials`, con exportaciones correctas de `nodeType` y `nodeDescription`.
-- Validar parámetros de entrada antes de procesar datos.
-- Utilizar `NodeOperationError` o `NodeApiError` para reportar fallos controlados.
-- Encapsular interacciones externas en bloques `try/catch`.
-- Proporcionar mensajes de error claros, orientados al usuario de n8n.
-- Implementar pruebas unitarias e integrales (framework sugerido: Jest o Mocha+Chai) con cobertura mínima del 80%, incluyendo casos límite y entradas inválidas.
+- Follow the `n8n-nodes-base` layout: node code in `/nodes`, credentials in `/credentials`.
+- Export `nodeType` and `nodeDescription` correctly for each module.
+- Validate parameters before processing data.
+- Use `NodeOperationError` or `NodeApiError` for predictable failures.
+- Wrap external operations in `try/catch` blocks.
+- Provide descriptive, English error messages.
+- Maintain unit and integration tests (Jest, Mocha+Chai, Vitest or similar) with coverage at or above 80%, covering success paths, limits and failure scenarios.
 
-## 4. Calidad y Automatización
+## 4. Quality and Automation
 
-- **Linting y formato**
-  - Configurar ESLint y Prettier con reglas compartidas.
-  - Definir scripts en `package.json`:
+- **Linting and formatting**
+  - Configure ESLint and Prettier with shared rules.
+  - Provide scripts in `package.json`, for example:
     ```json
     {
       "scripts": {
@@ -47,36 +48,57 @@ Guía de referencia para mantener y profesionalizar el nodo `n8n-nodes-rckflr-ce
       }
     }
     ```
-- **Integración continua (CI/CD)**
-  - Añadir `.github/workflows/ci.yml` que instale dependencias y ejecute `lint`, `build` y `test`.
-  - (Opcional) Automatizar publicación a npm tras pases en main.
+- **CI/CD**
+  - Add `.github/workflows/ci.yml` to install dependencies and run `lint`, `build` and `test`.
+  - Optionally automate npm publishing when the main branch passes checks.
 - **Build**
-  - Compilar con `tsc` o `rollup` y exportar artefactos en `/dist`.
-  - Declarar en `package.json`:
+  - Compile with `tsc` or `rollup` and emit artefacts in `/dist`.
+  - Ensure `package.json` exposes:
     ```json
     {
       "files": ["dist", "nodes", "credentials"]
     }
     ```
 
-## 5. Publicación en npm
+## 5. npm Publication
 
-- Validar empaquetado con `npm pack`.
-- Probar instalación local con `npm install -g ./package.tgz`.
-- Publicar con:
+- Validate the package with `npm pack`.
+- Test local installation via `npm install -g ./package.tgz`.
+- Publish with:
   ```bash
   npm publish --access public
   ```
-- Sincronizar versión de `package.json` con el `CHANGELOG.md`.
-- Mantener completos los metadatos de npm (`repository`, `bugs`, `homepage`, `keywords`).
+- Keep `package.json` and `CHANGELOG.md` aligned for every release.
+- Fill in npm metadata (`repository`, `bugs`, `homepage`, `keywords`).
 
-## 6. Mejoras Opcionales
+## 6. Optional Improvements
 
-- Crear `/examples` con flujos JSON de demostración.
-- Añadir `docker-compose.yml` para levantar entornos de prueba locales.
-- Configurar Dependabot o Renovate para gestión de dependencias.
-- Integrar CodeClimate o SonarCloud para métricas de calidad y deuda técnica.
+- Provide an `/examples` directory with demo workflows.
+- Ship a `docker-compose.yml` that boots a local test environment.
+- Configure Dependabot or Renovate to track dependency updates.
+- Integrate CodeClimate, SonarCloud or similar for quality metrics.
+
+## 7. Verification Checklist
+
+| Area               | Verification                                                  | Status / Notes                                       |
+|--------------------|----------------------------------------------------------------|------------------------------------------------------|
+| Structure          | Node generated or adapted with `n8n-node` tooling             | Adapted from starter template; review complete       |
+| Source code        | Code is complete and accessible in the repository             | Done                                                 |
+| Dependencies       | No unnecessary or heavy dependencies                          | Done                                                 |
+| Documentation      | Inputs and outputs documented                                 | Done                                                 |
+| Documentation      | Practical example and English description provided            | Done                                                 |
+| Errors             | Uses `NodeOperationError` or `NodeApiError`                   | Done                                                 |
+| Messages           | Errors and descriptions written in clear English              | Done                                                 |
+| System access      | No direct access to `process.env` or filesystem               | Done                                                 |
+| Tests              | Unit and integration tests implemented                        | Unit tests in place; integration tests pending       |
+| Tests              | Coverage >= 80% including error scenarios                     | Threshold configured; monitor coverage reports       |
+| Linter             | ESLint / Prettier pass without errors                         | Done                                                 |
+| Compatibility      | Works with `n8n >= 1.40.0` and Node 20.x                      | Done                                                 |
+| Publication        | Can be packaged and installed without issues                  | Manual verification pending                          |
+| Language           | Code, docs and messages in English                            | Done                                                 |
+| License            | LICENSE file present and referenced                           | Done                                                 |
+| Manual review      | Meets security and readability guidelines                     | Ongoing                                              |
 
 ---
 
-📦 **Objetivo final:** entregar un nodo con estructura profesional, documentación clara, automatizaciones activas y listo para publicarse en npm de forma confiable.
+Goal: deliver a verified node aligned with n8n guidelines, backed by documentation, automated quality checks and a repeatable release process.

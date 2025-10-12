@@ -4,8 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| Latest  | ✅        |
-| Older   | ❌        |
+| Latest  | Yes       |
+| Older   | No        |
 
 Security fixes are only provided for the latest published version of the package.
 

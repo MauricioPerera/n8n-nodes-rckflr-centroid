@@ -110,4 +110,4 @@ See `REQUIREMENTS.md` for the full list of project standards.
 
 ## License
 
-Released under the [MIT License](LICENSE.md) © Mauricio Perera.
+Released under the [MIT License](LICENSE.md) (c) Mauricio Perera.

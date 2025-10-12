@@ -19,7 +19,7 @@ export class Centroid implements INodeType {
 		defaults: {
 			name: 'Centroid',
 		},
-		inputs: ['main'], // Accepts input nodes
+		inputs: ['main'],
 		outputs: ['main'],
 		properties: [
 			{
@@ -28,7 +28,6 @@ export class Centroid implements INodeType {
 				type: 'json',
 				default: '',
 				description: 'Enter an array of vectors directly (e.g., [[1,2,3],[4,5,6],[7,8,9]])',
-			},
 			},
 			{
 				displayName: 'Merge Output With Input',
