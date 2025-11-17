@@ -5,14 +5,131 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE.md)
 [![Coverage Status](https://img.shields.io/badge/coverage-80%25+-brightgreen?style=flat-square)](#quality)
 
-n8n community node that calculates the centroid of a list of numeric vectors. It is built for data pipelines that require averaging coordinates, embeddings or any multidimensional numeric representation.
+n8n community node for advanced vector operations including centroid calculation, K-means clustering, normalization, distance calculations, nearest neighbors, and similarity analysis. Perfect for data pipelines working with embeddings, coordinates, or multidimensional data.
 
 ## Features
 
-- Accepts vectors provided directly in the node or via incoming items.
-- Validates dimensional consistency and numeric values before processing.
-- Supports batch processing: each incoming item is evaluated independently.
-- Optionally merges the calculated centroid with the original item payload.
+- **Multiple Vector Operations**: Choose from 6 different operations for comprehensive vector analysis
+- **Flexible Input Sources**: Read vectors from node parameters, incoming items, or custom paths
+- **Robust Validation**: Dimensional consistency and numeric value validation before processing
+- **Batch Processing**: Process multiple items independently in a single execution
+- **Output Merging**: Optionally combine results with original item data
+
+## Available Operations
+
+### 1. Calculate Centroid
+Computes the mean (centroid) of a set of vectors.
+
+**Example Output:**
+```json
+{
+  "centroid": [2.5, 3.5, 4.5]
+}
+```
+
+### 2. K-Means Clustering
+Clusters vectors using the K-means algorithm with k-means++ initialization.
+
+**Parameters:**
+- Number of Clusters (k): Number of clusters to create
+- Max Iterations: Maximum iterations for convergence
+- Tolerance: Convergence tolerance threshold
+
+**Example Output:**
+```json
+{
+  "clusters": [
+    {
+      "centroid": [1.0, 1.5],
+      "vectors": [[0,1], [2,2]],
+      "indices": [0, 1],
+      "size": 2
+    }
+  ],
+  "labels": [0, 0, 1, 1],
+  "iterations": 15,
+  "inertia": 2.45
+}
+```
+
+### 3. Distance Matrix
+Calculates pairwise distances between all vectors.
+
+**Distance Metrics:**
+- Euclidean: Standard straight-line distance
+- Manhattan: Sum of absolute differences
+- Cosine: Angular distance between vectors
+
+**Example Output:**
+```json
+{
+  "distanceMatrix": [
+    [0, 5.0, 10.0],
+    [5.0, 0, 5.0],
+    [10.0, 5.0, 0]
+  ],
+  "metric": "euclidean"
+}
+```
+
+### 4. Normalize Vectors
+Normalizes vectors using various methods.
+
+**Normalization Types:**
+- **L1 (Manhattan)**: Scale by sum of absolute values
+- **L2 (Euclidean)**: Scale to unit length
+- **Min-Max Scaling**: Scale to [0, 1] range
+- **Z-Score (Standardization)**: Standardize to mean=0, std=1
+
+**Example Output:**
+```json
+{
+  "normalizedVectors": [[0.6, 0.8], [0, 1]],
+  "metadata": {
+    "type": "l2",
+    "originalNorms": [5.0, 5.0]
+  }
+}
+```
+
+### 5. K-Nearest Neighbors
+Finds K nearest neighbors to a query vector.
+
+**Parameters:**
+- Query Vector: The reference vector to find neighbors for
+- Number of Neighbors: How many neighbors to find
+- Distance Metric: Metric for distance calculation
+
+**Example Output:**
+```json
+{
+  "neighbors": [
+    { "vector": [1, 2], "distance": 1.41, "index": 0 },
+    { "vector": [2, 3], "distance": 2.83, "index": 1 }
+  ],
+  "queryVector": [0, 0]
+}
+```
+
+### 6. Similarity Matrix
+Calculates pairwise similarity between all vectors.
+
+**Similarity Metrics:**
+- **Cosine**: Cosine similarity (1 = identical direction)
+- **Pearson Correlation**: Linear correlation (-1 to 1)
+- **Jaccard**: Jaccard index for binary vectors
+
+**Example Output:**
+```json
+{
+  "similarities": [
+    [1.0, 0.95, 0.12],
+    [0.95, 1.0, 0.08],
+    [0.12, 0.08, 1.0]
+  ],
+  "metric": "cosine"
+}
+```
 
 ## Requirements
 
@@ -30,60 +147,120 @@ After installing, restart your n8n instance and add **Centroid** from the node p
 
 ## Usage
 
-1. Choose the **Vector Source**:
-   - Auto (Parameter or Item): Uses the parameter if provided; otherwise reads from the incoming item (array at `item.json` or from `item.json.vectors`).
-   - Parameter: Read vectors from the **Array of Vectors** parameter (e.g. `[[1,2,3],[4,5,6]]`).
-   - Item JSON (Root Array): Read vectors from the root of `item.json` when it contains an array of vectors.
-   - Item JSON (Path): Read vectors from a dot-separated path under `item.json` (e.g. `data.vectors`), configurable via **Vector Path**.
-2. Enable or disable **Merge Output With Input** depending on whether you want to keep the original item data.
-3. Execute the workflow. The node outputs a centroid array under the `centroid` key.
+1. **Select Operation**: Choose from centroid, clustering, normalization, distance, KNN, or similarity
+2. **Configure Vector Source**:
+   - **Auto (Parameter or Item)**: Uses parameter if provided; otherwise reads from incoming item
+   - **Parameter**: Read vectors from the **Array of Vectors** parameter
+   - **Item JSON (Root Array)**: Read vectors from root of `item.json`
+   - **Item JSON (Path)**: Read vectors from custom path (e.g., `data.embeddings`)
+3. **Configure Operation-Specific Parameters**: Each operation has its own parameters
+4. **Enable/Disable Merge Output**: Choose whether to keep original item data
 
-### Example Workflow
+### Example Workflows
 
-An example workflow is available at `examples/centroid-basic.json`. Import it into n8n to see the node in action.
-
+#### Centroid Calculation
 ```json
 {
   "nodes": [
     {
       "parameters": {
-        "values": {
-          "string": [
-            {
-              "name": "vectors",
-              "value": "[[0,0],[10,10],[5,5]]"
-            }
-          ]
-        },
-        "options": {}
+        "operation": "centroid",
+        "vectors": "[[0,0],[10,10],[5,5]]",
+        "vectorSource": "parameter"
       },
-      "name": "Set Vectors",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
-      "position": [280, 300]
-    },
-    {
-      "parameters": {},
       "name": "Centroid",
-      "type": "n8n-nodes-rckflr-centroid.centroid",
-      "typeVersion": 1,
-      "position": [540, 300]
+      "type": "n8n-nodes-rckflr-centroid.centroid"
     }
   ]
 }
 ```
 
+#### K-Means Clustering
+```json
+{
+  "parameters": {
+    "operation": "kmeans",
+    "k": 3,
+    "maxIterations": 100,
+    "vectorSource": "itemPath",
+    "vectorPath": "embeddings"
+  }
+}
+```
+
+#### Vector Normalization
+```json
+{
+  "parameters": {
+    "operation": "normalize",
+    "normalizationType": "l2",
+    "vectorSource": "auto"
+  }
+}
+```
+
+## Common Use Cases
+
+### 🤖 Machine Learning & AI
+- **Embeddings Analysis**: Cluster document/image embeddings
+- **Feature Normalization**: Prepare vectors for ML models
+- **Similarity Search**: Find similar items using cosine similarity
+
+### 📍 Geospatial Analysis
+- **Location Clustering**: Group GPS coordinates into regions
+- **Centroid Finding**: Calculate geographic centers
+- **Distance Calculations**: Compute distances between locations
+
+### 📊 Data Science
+- **Dimensionality Reduction Prep**: Normalize before PCA/t-SNE
+- **Outlier Detection**: Use distance metrics to identify outliers
+- **Pattern Recognition**: Cluster similar data points
+
+### 🔍 Recommendation Systems
+- **User Similarity**: Find similar users based on behavior vectors
+- **Item Clustering**: Group similar products or content
+- **Collaborative Filtering**: Use KNN for recommendations
+
 ## Inputs & Outputs
 
 | Aspect | Description |
 | --- | --- |
-| **Input** | Optional array of vectors. Provide via node parameter, `item.json` root array, or a dot-separated path under `item.json` (e.g. `data.vectors`). |
-| **Output** | Each item contains a centroid array. When merging is enabled, the centroid is added to the original item JSON. |
-| **Errors** | The node throws clear messages for malformed JSON, non-numeric components, empty vectors or mismatched dimensions. |
+| **Input** | Array of vectors from parameter, `item.json` root, or custom path |
+| **Output** | Operation-specific results. When merging is enabled, results are added to original item JSON |
+| **Errors** | Clear error messages with item indices for malformed JSON, non-numeric components, empty vectors, or dimension mismatches |
 
 ## Error Handling
 
-The node uses `NodeOperationError` for predictable failures. Errors include an item index (when available) to help you pinpoint problematic entries quickly.
+The node uses `NodeOperationError` for predictable failures:
+
+- **Validation Errors**: Invalid JSON, non-numeric values, dimension mismatches
+- **Operation Errors**: Invalid parameters (e.g., k > number of vectors)
+- **Item Context**: Errors include item index for easy debugging
+
+Example error:
+```
+Number of clusters (k=5) cannot exceed number of vectors (3). [Item 0]
+```
+
+## Architecture
+
+```
+nodes/Centroid/
+├── Centroid.node.ts          # Main node with operation router
+├── operations/               # Individual operations
+│   ├── centroid.ts
+│   ├── kmeans.ts
+│   ├── distanceMatrix.ts
+│   ├── normalize.ts
+│   ├── knn.ts
+│   └── similarity.ts
+├── utils/                    # Shared utilities
+│   ├── distance.ts          # Distance metrics
+│   ├── math.ts              # Mathematical operations
+│   └── validation.ts        # Input validation
+└── types/                    # TypeScript types
+    └── index.ts
+```
 
 ## Development
 
@@ -98,20 +275,35 @@ To run the node locally alongside n8n, follow the [official local development gu
 
 ## Quality
 
-- Linting powered by ESLint (`eslint-n8n-nodes-base` ruleset).
-- Formatting enforced through Prettier.
-- Unit tests executed with Vitest with coverage thresholds at 80% for lines, functions, branches and statements.
-- Continuous integration configured in `.github/workflows/ci.yml`.
+- **Linting**: ESLint with `eslint-n8n-nodes-base` ruleset
+- **Formatting**: Prettier with project-specific rules
+- **Testing**: Vitest with comprehensive test coverage (65+ tests)
+  - Unit tests for all operations
+  - Integration tests for node execution
+  - Edge case and error handling tests
+- **Coverage Thresholds**: 80% for lines, functions, branches, and statements
+- **CI/CD**: Automated testing and validation via GitHub Actions
+
+## Performance
+
+- **Efficient Algorithms**: K-means++ initialization for faster clustering convergence
+- **Optimized Math**: Direct array operations without external heavy dependencies
+- **Zero Heavy Dependencies**: Only peer dependency is `n8n-workflow`
+- **Batch Support**: Process multiple items in a single execution
 
 ## Release Process
 
-1. Update `CHANGELOG.md` with pending changes.
-2. Bump the version in `package.json` following [SemVer](https://semver.org/).
-3. Tag the release (`git tag vX.Y.Z`) and push tags.
-4. Publish to npm with `pnpm publish --access public`.
+1. Update `CHANGELOG.md` with pending changes
+2. Bump the version in `package.json` following [SemVer](https://semver.org/)
+3. Tag the release (`git tag vX.Y.Z`) and push tags
+4. Publish to npm with `pnpm publish --access public`
 
 See `REQUIREMENTS.md` for the full list of project standards.
 
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
 ## License
 
-Released under the [MIT License](LICENSE.md) (c) Mauricio Perera.
+Released under the [MIT License](LICENSE.md) © Mauricio Perera.
